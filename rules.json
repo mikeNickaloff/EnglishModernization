@@ -1,0 +1,100 @@
+[
+  { "pattern": "^i([bcdfghjklmnpqrstvwxyz][aeiouy][bcdfghjklmnpqrstvwxyz])", "replacement": "ee\\1" },
+  { "pattern": "^(?!ir)([bcdfghjklmnpqrstvwxyz]+)i([bcdfghjklmnpqstvwxyz])$", "replacement": "\\1ee\\2" },
+{
+  "pattern": "cent\\b",
+  "replacement": "sent"
+},
+{
+  "pattern": "\\bcrea([b-df-hj-np-tv-z])",
+  "replacement": "kreea\\1"
+},
+  { "pattern": "eigh", "replacement": "ay" },
+  { "pattern": "ight$", "replacement": "ite" },
+  { "pattern": "igh", "replacement": "i" },
+  { "pattern": "augh", "replacement": "o" },
+  { "pattern": "tion", "replacement": "shun" },
+  { "pattern": "sion", "replacement": "shun" },
+  { "pattern": "ssion", "replacement": "shun" },
+  { "pattern": "tch", "replacement": "ch" },
+  { "pattern": "dge$", "replacement": "j" },
+  { "pattern": "ck", "replacement": "k" },
+  { "pattern": "c(?=[eiy])", "replacement": "s" },
+  { "pattern": "g(?=[eiy])", "replacement": "j" },
+  { "pattern": "qu", "replacement": "kw" },
+  { "pattern": "ph", "replacement": "f" },
+  { "pattern": "gh$", "replacement": "" },
+  { "pattern": "mb$", "replacement": "m" },
+  { "pattern": "^kn", "replacement": "n" },
+  { "pattern": "^wr", "replacement": "r" },
+  { "pattern": "^ps", "replacement": "s" },
+  { "pattern": "wh", "replacement": "w" },
+  { "pattern": "x", "replacement": "ks" },
+  { "pattern": "(?<=[^aeiou])es$", "replacement": "z" },
+  { "pattern": "ed$", "replacement": "t" },
+  { "pattern": "e$", "replacement": "" },
+  { "pattern": "ai", "replacement": "ay" },
+  { "pattern": "au", "replacement": "o" },
+  { "pattern": "oi", "replacement": "oy" },
+  { "pattern": "oo", "replacement": "u" },
+  { "pattern": "oa", "replacement": "o" },
+  { "pattern": "ea(?=[bcdfghjklmnpqrstvwxyz])", "replacement": "ee" },
+  { "pattern": "ie(?=[bcdfghjklmnpqstvwxyz])", "replacement": "ee" },
+  { "pattern": "ce$", "replacement": "s" },
+  { "pattern": "cy", "replacement": "sy" },
+  { "pattern": "gue$", "replacement": "g" },
+  { "pattern": "que$", "replacement": "k" },
+  { "pattern": "age$", "replacement": "ij" },
+  { "pattern": "ach$", "replacement": "ok" },
+  { "pattern": "eau$", "replacement": "o" },
+  { "pattern": "^qua", "replacement": "kwo" },
+  { "pattern": "^coo", "replacement": "ku" },
+  { "pattern": "ges$", "replacement": "jiz" },
+  { "pattern": "phe", "replacement": "fu" },
+  { "pattern": "eco", "replacement": "iku" },
+  { "pattern": "^com", "replacement": "ku" },
+  { "pattern": "^col", "replacement": "k" },
+  { "pattern": "ews", "replacement": "uz" },
+  { "pattern": "ch(?=[aou])", "replacement": "k" },
+  { "pattern": "sc(?=[eiy])", "replacement": "s" },
+  { "pattern": "ture$", "replacement": "chur" },
+  { "pattern": "sure$", "replacement": "shur" },
+  { "pattern": "gue", "replacement": "g" },
+  { "pattern": "ough$", "replacement": "o" },
+  { "pattern": "ought$", "replacement": "ot" },
+  { "pattern": "aught$", "replacement": "ot" },
+  { "pattern": "ough", "replacement": "o" },
+  { "pattern": "([bcdfghjklmnpqrstvwxyz])\\1", "replacement": "\\1" },
+  { "pattern": "^co", "replacement": "ko" },
+  { "pattern": "^ca", "replacement": "ka" },
+  { "pattern": "^cu", "replacement": "ku" },
+  { "pattern": "\\bpiece\\b", "replacement": "pees" },
+{
+  "pattern": "\\bterr([aeiou])",
+  "replacement": "tairr\\1"
+},
+{
+  "pattern": "\\b([bcdfghjklmnpqrstvwxyz])alk\\b",
+  "replacement": "\\1ok"
+},
+{
+  "pattern": "\\b(c|w|sh)ould\\b",
+  "replacement": "\\1ud"
+},{
+  "pattern": "\\b([dfr])eign\\b",
+  "replacement": "\\1ain"
+},
+{ "pattern": "au([sc])", "replacement": "aw\\1" },
+{ "pattern": "\\bkuntiin(g|d|z)?\\b", "replacement": "kuntayn\\1" },
+{ "pattern": "\\biinshunt\\b", "replacement": "aynshunt" },
+{ "pattern": "(?<=\\d)es\\b", "replacement": "s" },
+{ "pattern": "\\beezuli\\b", "replacement": "eezili" },
+{ "pattern": "\\bsoyng\\b", "replacement": "sawing" }
+
+
+
+
+
+
+
+]
