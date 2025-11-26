@@ -81,14 +81,19 @@ def save_output(path: Path, text: str) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Convert text to Americanized spelling.")
     parser.add_argument("--dict", required=True, help="Path to American dictionary.")
-    parser.add_argument("--rules", required=True, help="Path to rule-map.json rules.")
+    parser.add_argument("--rules", required=False, help="Path to rule-map.json rules.")
     parser.add_argument("--input", help="Input text. If omitted, reads from stdin.")
     parser.add_argument("--out", help="Output file.")
 
     args = parser.parse_args()
 
     dictionary = load_dictionary(Path(args.dict))
-    rules = load_rules(Path(args.rules))
+
+    if args.rules:
+
+        rules = load_rules(Path(args.rules))
+    else:
+        rules = load_rules(Path("./rules.json"))
 
     text = args.input if args.input is not None else sys.stdin.read()
 
