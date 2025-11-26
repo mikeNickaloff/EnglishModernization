@@ -47,10 +47,63 @@ Same language, less suffering.
   ```text
   word phonetic_form
   ```
+ - `modernize.py`
+A script that reads normal English text from stdin or arguments, looks up each word in american.txt, and outputs the modern phonetic version.
+
+Depending on how you wire it, it can:
+
+- Normalize case
+
+- Handle punctuation
+
+- Fall back gracefully when a word is missing from the dictionary
+
+Usage
+1. Basic command-line conversion
+
+From the repo directory:
+
+```
+echo "you know what this does - better than anything - makes english actually readable." \
+|  python3 modernize.py --dict american.txt
+```
+
+
+Example output:
+
+`yu no wut thees duz - betur than enithing - mayks inglish akshuli reedabl.`
+
+
+
+2. Converting a text file
+```
+python3 modernize.py --dict american.txt < input.txt > output_phonetic.txt
+```
+
+
+Now output_phonetic.txt contains the modernized phonetic spelling of your original text.
+
+
+## Rule-based normalization (optional)
+If extended with rule files, the system can apply regex-style transformations to smooth out irregularities and unify patterns (e.g. ough, eigh, tion, etc).
+
+### Token-by-token conversion
+modernize.py processes the input text word by word, replacing each term with its phonetic counterpart where available.
+
+## What this is good for
+
+- Making English text more readable for learners
+
+- Creating phonetic subtitles or captions
+
+- Feeding simplified text to TTS systems
+
+- Experimenting with orthography reform without inventing a whole new alphabet
+
+- Just… not staring at “through, tough, though, thought, bough” and questioning reality
+
 
 ---------------
-
-#  New Form
 
 # englishmodernizashun
 
@@ -100,4 +153,59 @@ Saym langwuj, lz sufuring.
 
   ```tekst
   wurd fonetic_form
+  ```
+ - `madurniz.py`
+AY skript that ridz normul Inglish tekst frum stdeen ur arjyumunts, luks up ich wurd in umerukun.tkst, and outputs thu madurn fonetic vurzhun.
+
+Dipending an how yu wiur it, it kan:
+
+- Normaliz kays
+
+- Handul pungkuayshun
+
+- Fal bak graysfuli wen ay wurd iz mising frum thu dikshuneri
+
+Yusuj
+1. Baysik kumand-leen kunvurzhun
+
+Frum thu ripo direkturi:
+
+```
+eko "yu no wut thees duz - betur than enithing - mayks inglish akshuli reedabl." \
+|  pithan3 madurniz.py --dict umerukun.tkst
+```
+
+
+Igzampul owtput:
+
+`yu no wut thees duz - betur than enithing - mayks inglish akshuli reedabl.`
+
+
+
+2. Kunvurting ay tekst feel
+```
+pithan3 madurniz.py --dict umerukun.tkst < input.tkst > owtput_fonetic.tkst
+```
+
+
+Now owtput_fonetic.tkst kuntaynz thu modernizt fonetic speling uv yor urijunul tekst.
+
+
+## Rul-bayst normalizashun (apshunul)
+If ikstendud with rul filz, thu sistum kan upli rejeks-steel transfurmayshunz tu smuth owt eerejyulerutiz and yunufi paturnz (i.ji. ou, ay, shun, etseturu).
+
+### Tokun-bi-tokun kunvurzhun
+madurniz.py prasesuz thu input tekst wurd bi wurd, riplaysing ich turm with its fonetic kownturpart wer uvaylubul.
+
+## Wut thees iz gud fur
+
+- Mayking Inglish tekst mor reedabl fur leerners
+
+- Kriayting fonetic subtitulz ur kapshunz
+
+- Fiding simplufid tekst tu TS sistumz
+
+- Eksperumenting with orthografy ruform withowt inventing ay hol nu alfubet
+
+- Just… nat stering at “thru, tuf, tho, thot, bow” and kweskuning rialuti
 
