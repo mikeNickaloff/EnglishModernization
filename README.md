@@ -46,3 +46,58 @@ Same language, less suffering.
 
   ```text
   word phonetic_form
+  ```
+
+---------------
+
+#  New Form
+
+# englishmodernizashun
+
+**Thu ultumut madurnizayshu fur thu Inglish langwuj.**  
+Thees prajekt mayks it pasubul tu rt Inglish *withowt* jeting ay hedayk evuri teem yu heet ay silunt letur, ay randum vowul shift, ur ay wurd importid frum 1400es French fur no rizun.
+
+Inst uv fiting with trudishunul speling, thees ripo jivz yu:
+
+- AY **madurn fonetic speling** fur thu wurdz pipul akshuli yus tuday.
+- AY **kunvurtur skript** that tayks “aynshunt” Inglish speling and prudusuz ay kunsistunt, reedabl fonetic form.
+
+---
+
+## Wut thees prajekt duz
+
+Trudishunul Inglish speling iz:
+
+- Inkunsistunt  
+- Ful uv silunt leturz  
+- Pakt with wun-of iksepshunz  
+- AY nitmer fur leerners, TS enjunz, and frangkli, mos normul pipul  
+
+Thees prajekt riplaysiz that mz with ay **simplufid fonetic speling sistum**, maping ich kamun wurd intu ay form that:
+
+- Luks lik it sownz  
+- Yusuz kunsistunt paturnz  
+- Iz izi tu rt and prunowns  
+- Wurks wel fur tekst-tu-spich ur lurning
+
+In short: it turnz:
+
+> “yu no wut thees duz – betur than enithing – mayks Inglish akshuli reedabl.”
+
+intu sumthing lik:
+
+> `yu no wut thees duz – betur than enithing – mayks inglish akshli ridubl.`
+
+Saym langwuj, lz sufuring.
+
+---
+
+## Ripazutori kantents
+
+- `umerukun.tkst`  
+  AY dikshuneri maping standurd Inglish vokabyuleri tu ay modernizt fonetic speling.  
+  Ich leen iz tipikli in thu form:
+
+  ```tekst
+  wurd fonetic_form
+
