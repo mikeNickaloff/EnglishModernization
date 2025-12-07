@@ -74,7 +74,8 @@ Simplified, phoneme-driven spellings reduce ambiguity and better reflect America
 - `eng_to_us.html`: Browser translator using `american.txt` (dictionary replacements only).
 - `eng_to_us_2.html`: Browser translator using `CMU.txt` (rule-based phoneme flow).
 - `modernize.py`: CLI modernizer (stdin → stdout).
-- `CMU.txt`: CMU Pronouncing Dictionary (primary dependency for CMU-based flows).  
+- `CMU.txt`: CMU Pronouncing Dictionary (primary dependency for CMU-based flows).
+- `american.txt`: Generated american dictionary from CMU.txt using modernize.py.   
 - `CMU-PHONES.txt`, `IPA.txt`: Reference lists.
 
 ## Credits
