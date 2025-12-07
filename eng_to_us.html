@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simplified English Translator</title>
+  <title>Dictionary Lookup Translator</title>
   <style>
     :root {
       --bg1: #0c1c2f;
@@ -77,11 +77,11 @@
   </style>
 </head>
 <body>
-  <main class="page" aria-label="Simplified English translator">
+  <main class="page" aria-label="Dictionary lookup translator">
     <header>
-      <h1>Simplified English Translator</h1>
+      <h1>Dictionary Lookup Translator</h1>
       <p class="subtitle">
-        Type or paste traditional English. As you type, the page uses CMU pronunciations to produce a shorter spelling.
+        Type or paste any text. Words are replaced directly using american.txt; there are no phoneme rules or heuristics.
         Unknown words stay unchanged. Only the translation and a short status are shown—no extra panels.
       </p>
     </header>
@@ -90,7 +90,7 @@
       <div class="panel">
         <label class="label" for="inputArea">Enter text</label>
         <textarea id="inputArea" placeholder="Example: The neighborhood brought weighty sacks through the thorough fair."></textarea>
-        <div id="status" class="status" aria-live="polite">Loading CMU…</div>
+        <div id="status" class="status" aria-live="polite">Loading american.txt…</div>
       </div>
 
       <div class="panel">
@@ -99,203 +99,67 @@
       </div>
 
       <div class="muted">
-        Notes: Uses CMU pronunciations (CMU.txt). If CMU is unavailable, a small built-in lexicon is used. Processing is client-side.
+        Notes: Direct dictionary lookup only. Words are replaced using american.txt; no rule-based phoneme transformations.
       </div>
     </section>
   </main>
 
   <script>
-    const phonemeMap = {
-      "AA": "a", "AE": "a", "AH": "a", "AO": "o", "AW": "ow", "IY": "y",
-      "B": "b", "CH": "ch", "D": "d", "DH": "th", "EH": "e", "ER": "ur",
-      "EY": "ai", "F": "f", "G": "g", "HH": "h", "IH": "i", "IY": "ee",
-      "JH": "j", "K": "k", "L": "l", "M": "m", "N": "n", "NG": "ng",
-      "OW": "o", "OY": "oy", "P": "p", "R": "r", "S": "s", "SH": "sh",
-      "T": "t", "TH": "th", "UH": "oo", "UW": "oo", "V": "v", "W": "w",
-      "Y": "y", "Z": "s", "ZH": "zh"
-    };
-
-    const vowelSet = new Set(["AA","AE","AH","AO","AW","AY","EH","ER","EY","IH","IY","OW","OY","UH","UW","OH"]);
-    const forcedOverride = new Map([
-      ["the","tha"],
-      ["word","werd"],
-      ["but","but"],
-      ["becomes","becomes"]
-    ]);
-    const fallbackLexicon = new Map([
-      ["weight", ["W","EY","T"]],
-      ["sacks", ["S","AE","K","S"]],
-      ["thorough", ["TH","ER","OW"]],
-      ["through", ["TH","R","UW"]],
-      ["neighborhood", ["N","EY","B","ER","HH","UH","D"]],
-      ["transmission", ["T","R","AE","N","S","M","IH","SH","AH","N"]],
-      ["brought", ["B","R","AO","T"]],
-      ["gray", ["G","R","EY"]],
-      ["color", ["K","AH","L","ER"]],
-      ["attacker", ["AH","T","AE","K","ER"]]
-    ]);
-    const complexPattern = /(ough|eigh|igh|our|gue|que|eau|sion|tion|ph)/;
-
-    function basePhoneme(p) { return (p || "").replace(/[0-9]/g, ""); }
-    function isVowel(p) { return vowelSet.has(basePhoneme(p)); }
-
-    function phonemesToSimplified(phonemes, opts = {}) {
-      const hasRound = !!opts.hasRound; // word contains o or u
-      const firstChar = opts.firstChar || "";
-      const segments = [];
-      let notes = [];
-      let addFinalE = false;
-
-      const push = (text, type, note) => {
-        segments.push({ text, type });
-        if (note) notes.push(note);
-      };
-
-      for (let i = 0; i < phonemes.length; i++) {
-        const curr = basePhoneme(phonemes[i]);
-        const next = basePhoneme(phonemes[i + 1]);
-        const prev = basePhoneme(phonemes[i - 1]);
-
-        if (curr === "K" && next === "S") {
-          push("x", "cons", "k+s → x");
-          i += 1;
-          continue;
-        }
-        if (curr === "EY") {
-          if (i === phonemes.length - 2 && !isVowel(next)) {
-            push("a", "vowel", "final EY → a·e");
-            addFinalE = true;
-          } else {
-            push("ay", "vowel");
-          }
-          continue;
-        }
-        if (curr === "ER") {
-          if (!next || !isVowel(next) || next === "HH") {
-            push("a", "vowel", "er → a (unrhotic)");
-          } else {
-            push("ur", "vowel");
-          }
-          continue;
-        }
-        if (curr === "AH" && next === "N" && i === phonemes.length - 2) {
-          push("i", "vowel", "final AH N → in");
-          continue;
-        }
-        if (curr === "AH") {
-          if (next === "N") {
-            if (prev === "K" || prev === "G") {
-              push("o", "vowel", "AH between stop+N → o");
-            } else if (prev === "SH" || isVowel(prev)) {
-              push("e", "vowel", "AH before N → e");
-            } else {
-              push(hasRound ? "u" : "a", "vowel", hasRound ? "AH before N → u" : "AH before N → a");
-            }
-            continue;
-          }
-          if (i === 0) {
-            const preferU = firstChar === "o" || firstChar === "u";
-            push(preferU ? "u" : "a", "vowel", preferU ? "initial AH → u" : "initial AH → a");
-            continue;
-          }
-          if ((prev === "K" || prev === "G" || prev === "P" || prev === "B") && !isVowel(next)) {
-            push("o", "vowel", "AH after stop → o");
-            continue;
-          }
-          if (prev && !isVowel(prev)) {
-            push(hasRound ? "u" : "a", "vowel", hasRound ? "AH unstressed → u" : "AH unstressed → a");
-            continue;
-          }
-        }
-        if (curr === "AA") {
-          if (prev === "R") {
-            push("o", "vowel", "AA after R → o");
-            continue;
-          }
-        }
-        if (curr === "UH") {
-          push("oo", "vowel");
-          continue;
-        }
-        const mapped = phonemeMap[curr] || curr.toLowerCase();
-        push(mapped, isVowel(curr) ? "vowel" : "cons");
+    function matchCase(original, replacement) {
+      if (!original) return replacement;
+      if (original.toUpperCase() === original) return replacement.toUpperCase();
+      if (original[0] === original[0].toUpperCase()) {
+        return replacement[0].toUpperCase() + replacement.slice(1);
       }
-
-      let spelling = "";
-      for (const seg of segments) {
-        if (spelling && seg.type === "cons") {
-          const last = spelling[spelling.length - 1];
-          if (seg.text[0] === last) {
-            let trimmed = seg.text;
-            while (trimmed.startsWith(last)) trimmed = trimmed.slice(1);
-            spelling += trimmed;
-            continue;
-          }
-        }
-        spelling += seg.text;
-      }
-      if (addFinalE && !spelling.endsWith("e")) spelling += "e";
-      return { spelling, notes };
+      return replacement;
     }
 
-    function loadCMU() {
-      const statusEl = document.getElementById("status");
-      return fetch("CMU.txt")
-        .then(res => {
-          if (!res.ok) throw new Error("Fetch failed");
-          return res.text();
-        })
-        .then(text => {
-          const map = new Map();
-          text.split(/\r?\n/).forEach(line => {
-            if (!line.trim() || line.startsWith(";;;")) return;
-            const parts = line.trim().split(/\s+/);
-            if (parts.length < 2) return;
-            const word = parts[0].toLowerCase().replace(/\(\d+\)$/, "");
-            if (!map.has(word)) map.set(word, parts.slice(1));
-          });
-          statusEl.textContent = `CMU loaded (${map.size.toLocaleString()} entries)`;
-          return map;
-        })
-        .catch(() => {
-          statusEl.textContent = "Using built-in mini lexicon (CMU not loaded)";
-          return fallbackLexicon;
+    async function loadDictionary(statusEl) {
+      try {
+        const res = await fetch("american.txt");
+        if (!res.ok) throw new Error("Failed to fetch american.txt");
+        const text = await res.text();
+        const map = new Map();
+        text.split(/\r?\n/).forEach((line) => {
+          const trimmed = line.trim();
+          if (!trimmed) return;
+          const parts = trimmed.split(/\s+/);
+          if (parts.length < 2) return;
+          const key = parts[0].toLowerCase();
+          const value = parts[1];
+          if (!map.has(key)) map.set(key, value);
         });
+        statusEl.textContent = `american.txt loaded (${map.size.toLocaleString()} entries)`;
+        return map;
+      } catch (err) {
+        statusEl.textContent = "american.txt not found; leaving text unchanged";
+        return new Map();
+      }
     }
 
-    function matchCase(original, simplified) {
-      if (original.toUpperCase() === original) return simplified.toUpperCase();
-      if (original[0] === original[0].toUpperCase()) return simplified[0].toUpperCase() + simplified.slice(1);
-      return simplified;
+    function translateToken(token, dict) {
+      const direct = dict.get(token.toLowerCase());
+      if (direct) return matchCase(token, direct);
+
+      const match = token.match(/^([^A-Za-z0-9']*)([A-Za-z0-9'-]+)([^A-Za-z0-9']*)$/);
+      if (!match) return token;
+      const [, prefix, word, suffix] = match;
+      const mapped = dict.get(word.toLowerCase());
+      if (!mapped) return token;
+      return prefix + matchCase(word, mapped) + suffix;
     }
 
-    function simplifyWord(word, dict) {
-      const key = word.replace(/[^A-Za-z']+/g, "").toLowerCase();
-      if (!key) return word;
-      if (forcedOverride.has(key)) return matchCase(word, forcedOverride.get(key));
-
-      const phonemes = dict.get(key) || dict.get(key.replace(/'s$/, "")) || fallbackLexicon.get(key);
-      if (!phonemes) return word; // unknown
-
-      const { spelling, notes } = phonemesToSimplified(phonemes, {
-        hasRound: key.includes("o") || key.includes("u"),
-        firstChar: key[0] || ""
-      });
-      const shouldChange = notes.length > 0 || complexPattern.test(key);
-      const finalSpelling = shouldChange ? spelling : word.toLowerCase();
-      return matchCase(word, finalSpelling);
-    }
-
-    function modernizeText(text, dict) {
-      return text.replace(/[A-Za-z']+/g, (tok) => simplifyWord(tok, dict));
+    function translateText(text, dict) {
+      return text.replace(/\S+/g, (tok) => translateToken(tok, dict));
     }
 
     async function init() {
-      const dict = await loadCMU();
+      const statusEl = document.getElementById("status");
+      const dict = await loadDictionary(statusEl);
       const input = document.getElementById("inputArea");
       const output = document.getElementById("outputArea");
       const render = () => {
-        output.textContent = modernizeText(input.value, dict);
+        output.textContent = translateText(input.value, dict);
       };
       input.addEventListener("input", render);
       input.value = "The neighborhood brought weighty sacks through the thorough fair.";
