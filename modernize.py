@@ -13,9 +13,9 @@ from typing import Dict, List, Tuple
 
 
 PHONEME_MAP: Dict[str, str] = {
-    "AA": "a", "AE": "a", "AH": "a", "AO": "o", "AW": "ow", "AY": "ai",
+    "AA": "a", "AE": "a", "AH": "a", "AO": "o", "AW": "ow", "IY": "y",
     "B": "b", "CH": "ch", "D": "d", "DH": "th", "EH": "e", "ER": "ur",
-    "EY": "ay", "F": "f", "G": "g", "HH": "h", "IH": "i", "IY": "ee",
+    "EY": "ai", "F": "f", "G": "g", "HH": "h", "IH": "i", "IY": "ee",
     "JH": "j", "K": "k", "L": "l", "M": "m", "N": "n", "NG": "ng",
     "OW": "o", "OY": "oy", "P": "p", "R": "r", "S": "s", "SH": "sh",
     "T": "t", "TH": "th", "UH": "oo", "UW": "oo", "V": "v", "W": "w",
@@ -23,8 +23,7 @@ PHONEME_MAP: Dict[str, str] = {
 }
 
 VOWELS = {
-    "AA", "AE", "AH", "AO", "AW", "AY", "EH", "ER", "EY",
-    "IH", "IY", "OW", "OY", "UH", "UW",
+    "AA","AE","AH","AO","AW","AY","EH","ER","EY","IH","IY","OH","OY","UH","UW",
 }
 
 FORCED_OVERRIDE = {
@@ -41,6 +40,7 @@ FALLBACK_LEXICON: Dict[str, List[str]] = {
     "brought": ["B", "R", "AO", "T"],
     "gray": ["G", "R", "EY"],
     "color": ["K", "AH", "L", "ER"],
+    "attacker": ["AH", "T", "AE", "K", "ER"],
 }
 
 COMPLEX_PATTERN = re.compile(r"(ough|eigh|igh|our|gue|que|eau|sion|tion|ph)")
@@ -68,6 +68,7 @@ def phonemes_to_simplified(phonemes: List[str]) -> Tuple[str, List[str]]:
     while i < len(phonemes):
         curr = base_phoneme(phonemes[i])
         nxt = base_phoneme(phonemes[i + 1]) if i + 1 < len(phonemes) else ""
+        prv = base_phoneme(phonemes[i - 1]) if i > 0 else ""
 
         if curr == "K" and nxt == "S":
             push("x", "cons", "k+s → x")
@@ -84,8 +85,8 @@ def phonemes_to_simplified(phonemes: List[str]) -> Tuple[str, List[str]]:
             continue
 
         if curr == "ER":
-            if nxt == "HH":
-                push("or", "vowel", "er before h → or")
+            if not nxt or not is_vowel(nxt) or nxt == "HH":
+                push("a", "vowel", "er → a (unrhotic)")
             else:
                 push("ur", "vowel")
             i += 1
@@ -94,8 +95,36 @@ def phonemes_to_simplified(phonemes: List[str]) -> Tuple[str, List[str]]:
         if curr == "AH" and nxt == "N" and i == len(phonemes) - 2:
             push("i", "vowel", "final AH N → in")
             i += 1
-            i += 1
             continue
+
+        if curr == "AH":
+            if nxt == "N":
+                if prv in ("K", "G"):
+                    push("o", "vowel", "AH between stop+N → o")
+                elif prv == "SH" or is_vowel(prv):
+                    push("e", "vowel", "AH before N → e")
+                else:
+                    push("u", "vowel", "AH before N → u")
+                i += 1
+                continue
+            if i == 0:
+                push("u", "vowel", "initial AH → u")
+                i += 1
+                continue
+            if prv in ("K", "G", "P", "B") and not is_vowel(nxt):
+                push("o", "vowel", "AH after stop → o")
+                i += 1
+                continue
+            if prv and not is_vowel(prv):
+                push("u", "vowel", "AH unstressed → u")
+                i += 1
+                continue
+
+        if curr == "AA":
+            if prv == "R":
+                push("o", "vowel", "AA after R → o")
+                i += 1
+                continue
 
         if curr == "UH":
             push("oo", "vowel")

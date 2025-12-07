@@ -106,17 +106,24 @@
 
   <script>
     const phonemeMap = {
-      "AA": "a", "AE": "a", "AH": "a", "AO": "o", "AW": "ow", "AY": "ai",
+      "AA": "a", "AE": "a", "AH": "a", "AO": "o", "AW": "ow", "IY": "y",
       "B": "b", "CH": "ch", "D": "d", "DH": "th", "EH": "e", "ER": "ur",
-      "EY": "ay", "F": "f", "G": "g", "HH": "h", "IH": "i", "IY": "ee",
+      "EY": "ai", "F": "f", "G": "g", "HH": "h", "IH": "i", "IY": "ee",
       "JH": "j", "K": "k", "L": "l", "M": "m", "N": "n", "NG": "ng",
       "OW": "o", "OY": "oy", "P": "p", "R": "r", "S": "s", "SH": "sh",
       "T": "t", "TH": "th", "UH": "oo", "UW": "oo", "V": "v", "W": "w",
       "Y": "y", "Z": "s", "ZH": "zh"
     };
 
-    const vowelSet = new Set(["AA","AE","AH","AO","AW","AY","EH","ER","EY","IH","IY","OW","OY","UH","UW"]);
-    const forcedOverride = new Map([["the","tha"]]);
+    const vowelSet = new Set(["AA","AE","AH","AO","AW","AY","EH","ER","EY","IH","IY","OH","OY","UH","UW"]);
+    const forcedOverride = new Map([
+      ["the","tha"],
+      ["neighborhood","nebahood"],
+      ["runner","runna"],
+      ["proper","propa"],
+      ["connection","conectshen"],
+      ["upper","uppa"]
+    ]);
     const fallbackLexicon = new Map([
       ["weight", ["W","EY","T"]],
       ["sacks", ["S","AE","K","S"]],
@@ -147,6 +154,7 @@
       for (let i = 0; i < phonemes.length; i++) {
         const curr = basePhoneme(phonemes[i]);
         const next = basePhoneme(phonemes[i + 1]);
+        const prev = basePhoneme(phonemes[i - 1]);
 
         if (curr === "K" && next === "S") {
           push("x", "cons", "k+s → x");
@@ -163,8 +171,8 @@
           continue;
         }
         if (curr === "ER") {
-          if (next === "HH") {
-            push("or", "vowel", "er before h → or");
+          if (!next || !isVowel(next) || next === "HH") {
+            push("a", "vowel", "er → a (unrhotic)");
           } else {
             push("ur", "vowel");
           }
@@ -173,6 +181,36 @@
         if (curr === "AH" && next === "N" && i === phonemes.length - 2) {
           push("i", "vowel", "final AH N → in");
           continue;
+        }
+        if (curr === "AH") {
+          if (next === "N") {
+            if (prev === "K" || prev === "G") {
+              push("o", "vowel", "AH between stop+N → o");
+            } else if (prev === "SH" || isVowel(prev)) {
+              push("e", "vowel", "AH before N → e");
+            } else {
+              push("u", "vowel", "AH before N → u");
+            }
+            continue;
+          }
+          if (i === 0) {
+            push("u", "vowel", "initial AH → u");
+            continue;
+          }
+          if ((prev === "K" || prev === "G" || prev === "P" || prev === "B") && !isVowel(next)) {
+            push("o", "vowel", "AH after stop → o");
+            continue;
+          }
+          if (prev && !isVowel(prev)) {
+            push("u", "vowel", "AH unstressed → u");
+            continue;
+          }
+        }
+        if (curr === "AA") {
+          if (prev === "R") {
+            push("o", "vowel", "AA after R → o");
+            continue;
+          }
         }
         if (curr === "UH") {
           push("oo", "vowel");
