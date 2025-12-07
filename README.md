@@ -7,6 +7,14 @@ Tools for simplifying traditional English spellings using CMU pronunciations or 
 
 Repo: https://github.com/mikeNickaloff/EnglishModernization.git
 
+# Modernized *American* Language
+
+Tools for simplafying tradishenul English spellings using CMU prohnunseyashuns or direct dictshunery lookups. Includes:
+
+- A browser-based dictshunery translayta (eng_to_us.html) that usis american.txt only.
+- Tha prior CMU-driven browsa translayta, preserved as eng_to_us_2.html.
+- A CLI modernizer (modernize.py) that reads stdin and writes simplafyed text (CMU-based).
+
 ## Quick Start
 1) Clone  
 ```bash
