@@ -23,11 +23,14 @@ PHONEME_MAP: Dict[str, str] = {
 }
 
 VOWELS = {
-    "AA","AE","AH","AO","AW","AY","EH","ER","EY","IH","IY","OH","OY","UH","UW",
+    "AA","AE","AH","AO","AW","AY","EH","ER","EY","IH","IY","OW","OY","UH","UW","OH",
 }
 
 FORCED_OVERRIDE = {
     "the": "tha",
+    "word": "werd",
+    "but": "but",
+    "becomes": "becomes",
 }
 
 FALLBACK_LEXICON: Dict[str, List[str]] = {
@@ -54,7 +57,12 @@ def is_vowel(p: str) -> bool:
     return base_phoneme(p) in VOWELS
 
 
-def phonemes_to_simplified(phonemes: List[str]) -> Tuple[str, List[str]]:
+def phonemes_to_simplified(
+    phonemes: List[str],
+    *,
+    has_round: bool = False,
+    first_char: str = "",
+) -> Tuple[str, List[str]]:
     segments: List[Tuple[str, str]] = []  # (text, type)
     notes: List[str] = []
     add_final_e = False
@@ -104,11 +112,12 @@ def phonemes_to_simplified(phonemes: List[str]) -> Tuple[str, List[str]]:
                 elif prv == "SH" or is_vowel(prv):
                     push("e", "vowel", "AH before N → e")
                 else:
-                    push("u", "vowel", "AH before N → u")
+                    push("u" if has_round else "a", "vowel", "AH before N → {}".format("u" if has_round else "a"))
                 i += 1
                 continue
             if i == 0:
-                push("u", "vowel", "initial AH → u")
+                prefer_u = first_char in ("o", "u")
+                push("u" if prefer_u else "a", "vowel", "initial AH → {}".format("u" if prefer_u else "a"))
                 i += 1
                 continue
             if prv in ("K", "G", "P", "B") and not is_vowel(nxt):
@@ -116,7 +125,7 @@ def phonemes_to_simplified(phonemes: List[str]) -> Tuple[str, List[str]]:
                 i += 1
                 continue
             if prv and not is_vowel(prv):
-                push("u", "vowel", "AH unstressed → u")
+                push("u" if has_round else "a", "vowel", "AH unstressed → {}".format("u" if has_round else "a"))
                 i += 1
                 continue
 
@@ -195,7 +204,9 @@ def simplify_word(word: str, cmu: Dict[str, List[str]]) -> str:
     if not phonemes:
         return clean  # unknown: leave unchanged
 
-    spelling, notes = phonemes_to_simplified(phonemes)
+    has_round = ("o" in key) or ("u" in key)
+    first_char = key[0] if key else ""
+    spelling, notes = phonemes_to_simplified(phonemes, has_round=has_round, first_char=first_char)
     should_change = bool(notes) or bool(COMPLEX_PATTERN.search(key))
     final_spelling = spelling if should_change else clean.lower()
     return match_case(clean, final_spelling)

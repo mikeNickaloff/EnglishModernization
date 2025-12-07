@@ -115,14 +115,12 @@
       "Y": "y", "Z": "s", "ZH": "zh"
     };
 
-    const vowelSet = new Set(["AA","AE","AH","AO","AW","AY","EH","ER","EY","IH","IY","OH","OY","UH","UW"]);
+    const vowelSet = new Set(["AA","AE","AH","AO","AW","AY","EH","ER","EY","IH","IY","OW","OY","UH","UW","OH"]);
     const forcedOverride = new Map([
       ["the","tha"],
-      ["neighborhood","nebahood"],
-      ["runner","runna"],
-      ["proper","propa"],
-      ["connection","conectshen"],
-      ["upper","uppa"]
+      ["word","werd"],
+      ["but","but"],
+      ["becomes","becomes"]
     ]);
     const fallbackLexicon = new Map([
       ["weight", ["W","EY","T"]],
@@ -141,7 +139,9 @@
     function basePhoneme(p) { return (p || "").replace(/[0-9]/g, ""); }
     function isVowel(p) { return vowelSet.has(basePhoneme(p)); }
 
-    function phonemesToSimplified(phonemes) {
+    function phonemesToSimplified(phonemes, opts = {}) {
+      const hasRound = !!opts.hasRound; // word contains o or u
+      const firstChar = opts.firstChar || "";
       const segments = [];
       let notes = [];
       let addFinalE = false;
@@ -189,12 +189,13 @@
             } else if (prev === "SH" || isVowel(prev)) {
               push("e", "vowel", "AH before N → e");
             } else {
-              push("u", "vowel", "AH before N → u");
+              push(hasRound ? "u" : "a", "vowel", hasRound ? "AH before N → u" : "AH before N → a");
             }
             continue;
           }
           if (i === 0) {
-            push("u", "vowel", "initial AH → u");
+            const preferU = firstChar === "o" || firstChar === "u";
+            push(preferU ? "u" : "a", "vowel", preferU ? "initial AH → u" : "initial AH → a");
             continue;
           }
           if ((prev === "K" || prev === "G" || prev === "P" || prev === "B") && !isVowel(next)) {
@@ -202,7 +203,7 @@
             continue;
           }
           if (prev && !isVowel(prev)) {
-            push("u", "vowel", "AH unstressed → u");
+            push(hasRound ? "u" : "a", "vowel", hasRound ? "AH unstressed → u" : "AH unstressed → a");
             continue;
           }
         }
@@ -276,7 +277,10 @@
       const phonemes = dict.get(key) || dict.get(key.replace(/'s$/, "")) || fallbackLexicon.get(key);
       if (!phonemes) return word; // unknown
 
-      const { spelling, notes } = phonemesToSimplified(phonemes);
+      const { spelling, notes } = phonemesToSimplified(phonemes, {
+        hasRound: key.includes("o") || key.includes("u"),
+        firstChar: key[0] || ""
+      });
       const shouldChange = notes.length > 0 || complexPattern.test(key);
       const finalSpelling = shouldChange ? spelling : word.toLowerCase();
       return matchCase(word, finalSpelling);
